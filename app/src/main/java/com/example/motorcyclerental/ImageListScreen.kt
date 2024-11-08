@@ -5,14 +5,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Place
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,9 +17,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.layout.ContentScale
+import androidx.core.net.toUri
 
 @Composable
 fun ImageListScreen(brandName: String, navController: NavController) {
@@ -61,7 +55,6 @@ fun ImageListScreen(brandName: String, navController: NavController) {
         else -> listOf()
     }
 
-    // Rates for each bike model
     val rates = when (brandName) {
         "Honda" -> listOf(
             "Daily rate: ₱600\nWeekly rate: ₱3,500\nMonthly rate: ₱10,000",
@@ -94,135 +87,101 @@ fun ImageListScreen(brandName: String, navController: NavController) {
         else -> listOf()
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceBetween // Arrange items to occupy available space
-    ) {
-        // Header
-        Text(
-            text = "$brandName Models",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(16.dp)
+    Box(modifier = Modifier.fillMaxSize()) {
+
+        Image(
+            painter = painterResource(id = R.drawable.background_bg_2),
+            contentDescription = "Background",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // List of images and rates
-        LazyColumn(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.Start
+                .fillMaxSize()
+                .padding(top = 16.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            items(imageDescriptions.zip(rates)) { (image, rate) ->
-                val (imageResId, description) = image
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Image(
-                        painter = painterResource(id = imageResId),
-                        contentDescription = description,
+
+            Text(
+                text = "$brandName Models",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(16.dp)
+            )
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                items(imageDescriptions.zip(rates)) { (image, rate) ->
+                    val (imageResId, description) = image
+                    Row(
                         modifier = Modifier
-                            .size(180.dp)
-                            .border(2.dp, Color.Black, RoundedCornerShape(8.dp))
-                            .padding(4.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        horizontalAlignment = Alignment.Start
+                            .fillMaxWidth()
+                            .padding(4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
                     ) {
-                        Text(
-                            text = description,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                        Text(
-                            text = rate,
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                        Button(
-                            onClick = {
-                                navController.navigate("BookingScreen/${description}/${rate}")
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)
+                        Box(
+                            modifier = Modifier
+                                .size(180.dp)
+                                .border(1.dp, Color.Black, CutCornerShape(8.dp))
+                                .padding(2.dp)
+                                .shadow(3.dp, CutCornerShape(8.dp))
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .width(165.dp) // Adjust ni sa image size manually
+                                    .align(Alignment.Center)
+                            ) {
+                                Image(
+                                    painter = painterResource(id = imageResId),
+                                    contentDescription = description,
+                                    contentScale = ContentScale.Fit,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.width(16.dp))
+
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            horizontalAlignment = Alignment.Start
                         ) {
                             Text(
-                                text = "Book Now",
-                                fontSize = 11.sp,
-                                color = Color.White
+                                text = description,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(bottom = 8.dp)
                             )
+                            Text(
+                                text = rate,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(bottom = 2.dp)
+                            )
+                            Button(
+                                onClick = {
+                                    val encodedDescription = description.toUri().toString()
+                                    val encodedRate = rate.toUri().toString()
+                                    navController.navigate("BookingScreen/$encodedDescription/$encodedRate")
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF316FF6))
+                            ) {
+                                Text(
+                                    text = "Book Now",
+                                    fontSize = 11.sp,
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
                 }
             }
-        }
-
-        // Bottom Navigation
-        BottomNavigation(navController)
-    }
-}
-
-@Composable
-fun BottomNavigation(navController: NavController) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        IconButton(
-            onClick = { navController.navigate(route = "MainScreen") },
-            modifier = Modifier.size(36.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Home,
-                contentDescription = "Home Icon",
-                tint = Color.Black
-            )
-        }
-
-        IconButton(
-            onClick = { /* TODO: Implement functionality */ },
-            modifier = Modifier.size(36.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.DateRange,
-                contentDescription = "Date Range Icon",
-                tint = Color.Black
-            )
-        }
-
-        IconButton(
-            onClick = { /* TODO: Implement functionality */ },
-            modifier = Modifier.size(36.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Place,
-                contentDescription = "Place Icon",
-                tint = Color.Black
-            )
-        }
-
-        IconButton(
-            onClick = { /* TODO: Implement functionality */ },
-            modifier = Modifier.size(36.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Person,
-                contentDescription = "Person Icon",
-                tint = Color.Black
-            )
         }
     }
 }
