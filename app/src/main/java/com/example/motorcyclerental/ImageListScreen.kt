@@ -6,21 +6,28 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.layout.ContentScale
 import androidx.navigation.NavController
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.draw.clip
 import androidx.core.net.toUri
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImageListScreen(brandName: String, navController: NavController) {
     val imageDescriptions = when (brandName) {
@@ -88,7 +95,6 @@ fun ImageListScreen(brandName: String, navController: NavController) {
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-
         Image(
             painter = painterResource(id = R.drawable.background_bg_2),
             contentDescription = "Background",
@@ -96,47 +102,42 @@ fun ImageListScreen(brandName: String, navController: NavController) {
             contentScale = ContentScale.Crop
         )
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 16.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-
-            Text(
-                text = "$brandName Models",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(16.dp)
+        Column(modifier = Modifier.fillMaxSize()) {
+            TopAppBar(
+                title = { Text(text = "$brandName Models") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalAlignment = Alignment.Start
-            ) {
-                items(imageDescriptions.zip(rates)) { (image, rate) ->
-                    val (imageResId, description) = image
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        Box(
+            Box(modifier = Modifier.weight(1f)) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    items(imageDescriptions.zip(rates)) { (image, rate) ->
+                        val (imageResId, description) = image
+                        Row(
                             modifier = Modifier
-                                .size(180.dp)
-                                .border(1.dp, Color.Black, CutCornerShape(8.dp))
-                                .padding(2.dp)
-                                .shadow(3.dp, CutCornerShape(8.dp))
+                                .fillMaxWidth()
+                                .padding(4.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .width(165.dp) // Adjust ni sa image size manually
-                                    .align(Alignment.Center)
+                                    .size(180.dp)
+                                    .border(1.dp, Color.Black, CutCornerShape(8.dp))
+                                    .padding(2.dp)
+                                    .shadow(3.dp, CutCornerShape(8.dp))
                             ) {
                                 Image(
                                     painter = painterResource(id = imageResId),
@@ -145,42 +146,68 @@ fun ImageListScreen(brandName: String, navController: NavController) {
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }
-                        }
 
-                        Spacer(modifier = Modifier.width(16.dp))
+                            Spacer(modifier = Modifier.width(16.dp))
 
-                        Column(
-                            modifier = Modifier.weight(1f),
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                text = description,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-                            Text(
-                                text = rate,
-                                fontSize = 14.sp,
-                                modifier = Modifier.padding(bottom = 2.dp)
-                            )
-                            Button(
-                                onClick = {
-                                    val encodedDescription = description.toUri().toString()
-                                    val encodedRate = rate.toUri().toString()
-                                    navController.navigate("BookingScreen/$encodedDescription/$encodedRate")
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF316FF6))
-                            ) {
+                            Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = "Book Now",
-                                    fontSize = 11.sp,
-                                    color = Color.White
+                                    text = description,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(bottom = 8.dp)
                                 )
+                                Text(
+                                    text = rate,
+                                    fontSize = 14.sp,
+                                    modifier = Modifier.padding(bottom = 2.dp)
+                                )
+                                Button(
+                                    onClick = {
+                                        val encodedDescription = description.toUri().toString()
+                                        val encodedRate = rate.toUri().toString()
+                                        navController.navigate("BookingScreen/$encodedDescription/$encodedRate")
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                                ) {
+                                    Text(
+                                        text = "Book Now",
+                                        fontSize = 11.sp,
+                                        color = Color.White
+                                    )
+                                }
                             }
                         }
                     }
                 }
+            }
+
+            NavigationBar(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                NavigationBarItem(
+                    icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
+                    label = { Text("Home") },
+                    selected = false,
+                    onClick = { navController.navigate("HomeScreen") }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Filled.Favorite, contentDescription = "Favorite") },
+                    label = { Text("Favorite") },
+                    selected = false,
+                    onClick = { navController.navigate("FavoriteScreen") }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Filled.Notifications, contentDescription = "Notifications") },
+                    label = { Text("Notifications") },
+                    selected = false,
+                    onClick = { navController.navigate("NotificationScreen") }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Filled.Person, contentDescription = "Profile") },
+                    label = { Text("Profile") },
+                    selected = false,
+                    onClick = { navController.navigate("ProfileScreen") }
+                )
             }
         }
     }

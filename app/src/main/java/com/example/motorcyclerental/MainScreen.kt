@@ -20,7 +20,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.ui.draw.scale
 
 @Composable
 fun MainScreen(navController: NavController) {
@@ -34,7 +33,7 @@ fun MainScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(28.dp),
+                .padding(top = 32.dp, bottom = 32.dp, start = 28.dp, end = 28.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -60,7 +59,7 @@ fun MainScreen(navController: NavController) {
             onClick = { navController.navigate("SelectScreen") },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(28.dp),
+                .padding(bottom = 32.dp, end = 28.dp),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF316FF6))
         ) {
