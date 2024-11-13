@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun BookingScreen(bikeName: String, rate: String, navController: NavController) {
@@ -22,7 +23,7 @@ fun BookingScreen(bikeName: String, rate: String, navController: NavController) 
     var isWeeklyChecked by remember { mutableStateOf(false) }
     var isMonthlyChecked by remember { mutableStateOf(false) }
 
-    // Set background color
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -30,8 +31,8 @@ fun BookingScreen(bikeName: String, rate: String, navController: NavController) 
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center, // Center vertically
-            modifier = Modifier.fillMaxHeight() // Fill the height of the Box
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxHeight()
         ) {
             Text(
                 text = "Booking Details",

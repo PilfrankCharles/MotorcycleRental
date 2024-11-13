@@ -59,7 +59,7 @@ fun MainScreen(navController: NavController) {
             onClick = { navController.navigate("SelectScreen") },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(bottom = 32.dp, end = 28.dp),
+                .padding(bottom = 52.dp, end = 28.dp),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF316FF6))
         ) {
@@ -67,7 +67,7 @@ fun MainScreen(navController: NavController) {
                 text = "Get Started",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
+                fontSize = 16.sp
             )
             Spacer(modifier = Modifier.width(4.dp))
             Icon(

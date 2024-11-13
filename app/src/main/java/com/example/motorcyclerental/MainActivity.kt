@@ -1,14 +1,10 @@
 package com.example.motorcyclerental
 
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.*
-import com.example.motorcyclerental.ImageListScreen
-import com.example.motorcyclerental.MainScreen
-
 
 class MainActivity : ComponentActivity() {
 
@@ -17,6 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
+
             NavHost(navController = navController, startDestination = "MainScreen") {
                 composable("MainScreen") {
                     MainScreen(navController)
@@ -27,6 +24,11 @@ class MainActivity : ComponentActivity() {
                 composable("imageList/{brandName}") { backStackEntry ->
                     val brandName = backStackEntry.arguments?.getString("brandName") ?: ""
                     ImageListScreen(brandName, navController)
+                }
+                composable("BookingScreen/{bikeName}/{rate}") { backStackEntry ->
+                    val bikeName = backStackEntry.arguments?.getString("bikeName") ?: ""
+                    val rate = backStackEntry.arguments?.getString("rate") ?: ""
+                    BookingScreen(bikeName = bikeName, rate = rate, navController = navController)
                 }
             }
         }
