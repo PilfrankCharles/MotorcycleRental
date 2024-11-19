@@ -163,7 +163,7 @@ fun BookingButton(description: String, rate: String, navController: NavControlle
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavController) {
+fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modifier) {
     var selectedItem by remember { mutableStateOf(0) }
 
     NavigationBar(containerColor = Color.White, contentColor = Color.Black) {
