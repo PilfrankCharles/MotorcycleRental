@@ -20,9 +20,7 @@ import androidx.navigation.NavController
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookingScreen(bikeName: String, rate: String, navController: NavController) {
-    var isDailyChecked by remember { mutableStateOf(false) }
-    var isWeeklyChecked by remember { mutableStateOf(false) }
-    var isMonthlyChecked by remember { mutableStateOf(false) }
+    var selectedRate by remember { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -69,13 +67,13 @@ fun BookingScreen(bikeName: String, rate: String, navController: NavController) 
                 Text(
                     text = "$rate",
                     fontSize = 18.sp,
-                    color = Color.Black,
+                    color = Color.DarkGray,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
 
-                RateOption("Daily Rate", isDailyChecked) { isDailyChecked = it }
-                RateOption("Weekly Rate", isWeeklyChecked) { isWeeklyChecked = it }
-                RateOption("Monthly Rate", isMonthlyChecked) { isMonthlyChecked = it }
+                RateOption("Daily Rate", selectedRate == "Daily Rate") { selectedRate = "Daily Rate" }
+                RateOption("Weekly Rate", selectedRate == "Weekly Rate") { selectedRate = "Weekly Rate" }
+                RateOption("Monthly Rate", selectedRate == "Monthly Rate") { selectedRate = "Monthly Rate" }
             }
 
             Box(
@@ -120,18 +118,18 @@ fun BookingScreen(bikeName: String, rate: String, navController: NavController) 
 }
 
 @Composable
-fun RateOption(label: String, isChecked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+fun RateOption(label: String, isSelected: Boolean, onSelectedChange: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
-        Checkbox(
-            checked = isChecked,
-            onCheckedChange = onCheckedChange,
-            colors = CheckboxDefaults.colors(
-                checkedColor = if (isChecked) Color(0xFF316FF6) else Color.Black
+        RadioButton(
+            selected = isSelected,
+            onClick = onSelectedChange,
+            colors = RadioButtonDefaults.colors(
+                selectedColor = if (isSelected) Color(0xFF316FF6) else Color.Black
             )
         )
         Spacer(modifier = Modifier.width(8.dp))
