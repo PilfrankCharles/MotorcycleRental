@@ -57,7 +57,6 @@ fun BookingScreen(bikeName: String, rate: String, navController: NavController) 
                     .padding(16.dp)
                     .weight(1f)
             ) {
-                Spacer(modifier = Modifier.height(72.dp))
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -67,7 +66,7 @@ fun BookingScreen(bikeName: String, rate: String, navController: NavController) 
                     Text(
                         text = "Model: $bikeName",
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.Medium,
+                        fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(top = 32.dp)
                     )
 
@@ -87,7 +86,7 @@ fun BookingScreen(bikeName: String, rate: String, navController: NavController) 
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 32.dp)
-                        .padding(bottom = 16.dp)
+                        .padding(bottom = 280.dp)
                 ) {
                     Button(
                         onClick = { showDialog = true },

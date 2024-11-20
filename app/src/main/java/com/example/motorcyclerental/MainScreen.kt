@@ -57,7 +57,6 @@ fun MainScreen(navController: NavController) {
                 .offset(y = 100.dp)
                 .padding(8.dp)
         )
-
         Column(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -114,7 +113,7 @@ fun MainScreen(navController: NavController) {
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier
                             .clickable {
-                                // Handle the sign-in navigation here
+                                navController.navigate("LoginScreen")
                             }
                             .padding(end = 32.dp)
                     )

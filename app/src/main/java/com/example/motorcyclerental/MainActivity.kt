@@ -30,8 +30,10 @@ class MainActivity : ComponentActivity() {
                     val rate = backStackEntry.arguments?.getString("rate") ?: ""
                     BookingScreen(bikeName = bikeName, rate = rate, navController = navController)
                 }
+                composable("LoginScreen") {
+                    LoginScreen(navController)
+                }
             }
         }
     }
 }
-
