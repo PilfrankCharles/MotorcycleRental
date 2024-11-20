@@ -39,12 +39,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavController) {
+fun SignUpScreen(navController: NavController) {
+    val fullName = remember { mutableStateOf(TextFieldValue()) }
     val email = remember { mutableStateOf(TextFieldValue()) }
     val password = remember { mutableStateOf(TextFieldValue()) }
+    val confirmPassword = remember { mutableStateOf(TextFieldValue()) }
     val context = LocalContext.current // Access context to use Toast
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -74,7 +75,7 @@ fun LoginScreen(navController: NavController) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                modifier = Modifier.height(72.dp) // Adjust the height of the TopAppBar here
+                modifier = Modifier.height(72.dp)
             )
 
             // App Header Text
@@ -87,9 +88,9 @@ fun LoginScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // "Welcome Back" Text
+            // "Create Account" Text
             Text(
-                text = "Welcome Back",
+                text = "Create Account",
                 color = Color.Black,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
@@ -98,7 +99,7 @@ fun LoginScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Enter your details below",
+                text = "Fill in the details below",
                 color = Color.LightGray,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal
@@ -106,38 +107,65 @@ fun LoginScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
+            // Full Name input field
+            TextField(
+                value = fullName.value,
+                onValueChange = { fullName.value = it },
+                label = { Text("Full Name") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, LightGray, RoundedCornerShape(12.dp)),
+                textStyle = TextStyle(fontSize = 18.sp),
+                singleLine = true,
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
             // Email input field
             TextField(
                 value = email.value,
                 onValueChange = { email.value = it },
-                label = { Text("Email Address") }, // Label for the email input field
+                label = { Text("Email Address") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, LightGray, RoundedCornerShape(12.dp)), // Border with rounded corners
+                    .border(1.dp, LightGray, RoundedCornerShape(12.dp)),
                 textStyle = TextStyle(fontSize = 18.sp),
-                singleLine = true, // Ensures the email field is a single line
+                singleLine = true,
                 colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.Transparent, // Transparent background
-                    focusedIndicatorColor = Color.Transparent, // Remove the focused indicator line
-                    unfocusedIndicatorColor = Color.Transparent // Remove the unfocused indicator line
+                    containerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
                 )
             )
             Spacer(modifier = Modifier.height(8.dp))
 
             // Password input field
-            PasswordTextField(password = password)
+            PasswordTextField(password = password, label = "Password")
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Confirm Password input field
+            PasswordTextField(password = confirmPassword, label = "Confirm Password")
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Sign-In Button
+            // Sign-Up Button
             Button(
                 onClick = {
-                    // Validate login credentials here (You can integrate authentication logic)
-                    if (email.value.text.isNotEmpty() && password.value.text.isNotEmpty()) {
-                        // Navigate to the next screen
-                        navController.navigate("HomeScreen")
+                    if (fullName.value.text.isNotEmpty() && email.value.text.isNotEmpty() &&
+                        password.value.text.isNotEmpty() && confirmPassword.value.text.isNotEmpty()
+                    ) {
+                        if (password.value.text == confirmPassword.value.text) {
+                            // Handle sign-up logic here
+                            navController.navigate("HomeScreen")
+                        } else {
+                            Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
-                        // Show a Toast message or error
                         Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT).show()
                     }
                 },
@@ -148,7 +176,7 @@ fun LoginScreen(navController: NavController) {
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
-                    text = "Sign In",
+                    text = "Sign Up",
                     color = Color.White,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
@@ -157,111 +185,37 @@ fun LoginScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Forgot Password Text
-            Text(
-                text = "Forgot your password?",
-                color = Color(0xFF316FF6),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
-                modifier = Modifier.clickable {
-                    // Handle forgot password navigation here
-                }
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Social Login Options
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                // Google Button
-                Button(
-                    onClick = {
-                        // Google Sign In
-                    },
-                    modifier = Modifier
-                        .padding(horizontal = 6.dp)
-                        .weight(1f)
-                        .border(1.dp, LightGray, RoundedCornerShape(12.dp)),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.google_logo),
-                        contentDescription = "Google Login",
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Google",
-                        color = Color.Black,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                // Facebook Button
-                Button(
-                    onClick = {
-                        // Facebook Sign In
-                    },
-                    modifier = Modifier
-                        .padding(horizontal = 6.dp)
-                        .weight(1f)
-                        .border(1.dp, LightGray, RoundedCornerShape(12.dp)),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.facebook_logo),
-                        contentDescription = "Facebook Login",
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Facebook",
-                        color = Color.Black,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Navigation to Sign-Up page
+            // Navigation to Sign-In page
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Don't have an account? ",
+                    text = "Already have an account? ",
                     color = Color.Black,
                     fontSize = 14.sp
                 )
                 Text(
-                    text = "Sign Up",
+                    text = "Sign In",
                     color = Color(0xFF316FF6),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable {
-                        navController.navigate("SignUpScreen")
+                        navController.navigate("LoginScreen") {
+                            popUpTo("LoginScreen") { inclusive = true }
+                        }
                     }
                 )
             }
         }
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PasswordTextField(password: MutableState<TextFieldValue>) {
-    // State to control password visibility
+fun PasswordTextField(password: MutableState<TextFieldValue>, label: String) {
     val isPasswordVisible = remember { mutableStateOf(false) }
 
-    // Function to toggle the password visibility
     val togglePasswordVisibility: () -> Unit = {
         isPasswordVisible.value = !isPasswordVisible.value
     }
@@ -269,20 +223,19 @@ fun PasswordTextField(password: MutableState<TextFieldValue>) {
     TextField(
         value = password.value,
         onValueChange = { password.value = it },
-        label = { Text("Password") }, // Label for the password input field
+        label = { Text(label) }, // Use dynamic label here
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, LightGray, RoundedCornerShape(12.dp)), // Border with rounded corners
+            .border(1.dp, LightGray, RoundedCornerShape(12.dp)),
         textStyle = TextStyle(fontSize = 18.sp),
-        visualTransformation = if (isPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(), // Toggle between showing or masking the password
-        singleLine = true, // Ensures the password field is a single line
+        visualTransformation = if (isPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+        singleLine = true,
         colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.Transparent, // Transparent background
-            focusedIndicatorColor = Color.Transparent, // Focused indicator color
-            unfocusedIndicatorColor = Color.Transparent // Unfocused indicator color
+            containerColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
         ),
         trailingIcon = {
-            // Icon to toggle password visibility
             IconButton(onClick = togglePasswordVisibility) {
                 Icon(
                     imageVector = if (isPasswordVisible.value) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,

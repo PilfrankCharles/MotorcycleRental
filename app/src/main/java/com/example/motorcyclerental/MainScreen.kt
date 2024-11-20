@@ -70,7 +70,7 @@ fun MainScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Button(
-                    onClick = { navController.navigate("SelectScreen") },
+                    onClick = { navController.navigate("SignUpScreen") },
                     modifier = Modifier
                         .wrapContentWidth()
                         .padding(horizontal = 42.dp),
