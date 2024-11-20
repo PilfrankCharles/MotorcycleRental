@@ -39,13 +39,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavController) {
     val email = remember { mutableStateOf(TextFieldValue()) }
     val password = remember { mutableStateOf(TextFieldValue()) }
-    val context = LocalContext.current // Access context to use Toast
+    val context = LocalContext.current
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -62,7 +61,6 @@ fun LoginScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            // Top Navigation Bar
             CenterAlignedTopAppBar(
                 title = {
                     Text(
@@ -74,10 +72,9 @@ fun LoginScreen(navController: NavController) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                modifier = Modifier.height(72.dp) // Adjust the height of the TopAppBar here
+                modifier = Modifier.height(72.dp)
             )
 
-            // App Header Text
             Text(
                 text = "Moto Rent",
                 color = Color.Black,
@@ -87,7 +84,6 @@ fun LoginScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // "Welcome Back" Text
             Text(
                 text = "Welcome Back",
                 color = Color.Black,
@@ -99,45 +95,39 @@ fun LoginScreen(navController: NavController) {
 
             Text(
                 text = "Enter your details below",
-                color = Color.LightGray,
+                color = LightGray,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Email input field
             TextField(
                 value = email.value,
                 onValueChange = { email.value = it },
-                label = { Text("Email Address") }, // Label for the email input field
+                label = { Text("Email Address") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, LightGray, RoundedCornerShape(12.dp)), // Border with rounded corners
+                    .border(1.dp, LightGray, RoundedCornerShape(12.dp)),
                 textStyle = TextStyle(fontSize = 18.sp),
-                singleLine = true, // Ensures the email field is a single line
+                singleLine = true,
                 colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.Transparent, // Transparent background
-                    focusedIndicatorColor = Color.Transparent, // Remove the focused indicator line
-                    unfocusedIndicatorColor = Color.Transparent // Remove the unfocused indicator line
+                    containerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
                 )
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Password input field
             PasswordTextField(password = password)
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Sign-In Button
             Button(
                 onClick = {
-                    // Validate login credentials here (You can integrate authentication logic)
                     if (email.value.text.isNotEmpty() && password.value.text.isNotEmpty()) {
-                        // Navigate to the next screen
-                        navController.navigate("HomeScreen")
+                        navController.navigate("SelectScreen")
                     } else {
-                        // Show a Toast message or error
                         Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT).show()
                     }
                 },
@@ -157,28 +147,23 @@ fun LoginScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Forgot Password Text
             Text(
                 text = "Forgot your password?",
                 color = Color(0xFF316FF6),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier.clickable {
-                    // Handle forgot password navigation here
                 }
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Social Login Options
             Row(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // Google Button
                 Button(
                     onClick = {
-                        // Google Sign In
                     },
                     modifier = Modifier
                         .padding(horizontal = 6.dp)
@@ -203,10 +188,8 @@ fun LoginScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                // Facebook Button
                 Button(
                     onClick = {
-                        // Facebook Sign In
                     },
                     modifier = Modifier
                         .padding(horizontal = 6.dp)
@@ -232,7 +215,6 @@ fun LoginScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Navigation to Sign-Up page
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
@@ -255,13 +237,12 @@ fun LoginScreen(navController: NavController) {
         }
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PasswordTextField(password: MutableState<TextFieldValue>) {
-    // State to control password visibility
     val isPasswordVisible = remember { mutableStateOf(false) }
 
-    // Function to toggle the password visibility
     val togglePasswordVisibility: () -> Unit = {
         isPasswordVisible.value = !isPasswordVisible.value
     }
@@ -269,20 +250,19 @@ fun PasswordTextField(password: MutableState<TextFieldValue>) {
     TextField(
         value = password.value,
         onValueChange = { password.value = it },
-        label = { Text("Password") }, // Label for the password input field
+        label = { Text("Password") },
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, LightGray, RoundedCornerShape(12.dp)), // Border with rounded corners
+            .border(1.dp, LightGray, RoundedCornerShape(12.dp)),
         textStyle = TextStyle(fontSize = 18.sp),
-        visualTransformation = if (isPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(), // Toggle between showing or masking the password
-        singleLine = true, // Ensures the password field is a single line
+        visualTransformation = if (isPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+        singleLine = true,
         colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.Transparent, // Transparent background
-            focusedIndicatorColor = Color.Transparent, // Focused indicator color
-            unfocusedIndicatorColor = Color.Transparent // Unfocused indicator color
+            containerColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
         ),
         trailingIcon = {
-            // Icon to toggle password visibility
             IconButton(onClick = togglePasswordVisibility) {
                 Icon(
                     imageVector = if (isPasswordVisible.value) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,

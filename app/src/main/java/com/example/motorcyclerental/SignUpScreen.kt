@@ -46,7 +46,7 @@ fun SignUpScreen(navController: NavController) {
     val email = remember { mutableStateOf(TextFieldValue()) }
     val password = remember { mutableStateOf(TextFieldValue()) }
     val confirmPassword = remember { mutableStateOf(TextFieldValue()) }
-    val context = LocalContext.current // Access context to use Toast
+    val context = LocalContext.current
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -63,7 +63,6 @@ fun SignUpScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            // Top Navigation Bar
             CenterAlignedTopAppBar(
                 title = {
                     Text(
@@ -78,7 +77,6 @@ fun SignUpScreen(navController: NavController) {
                 modifier = Modifier.height(72.dp)
             )
 
-            // App Header Text
             Text(
                 text = "Moto Rent",
                 color = Color.Black,
@@ -88,7 +86,6 @@ fun SignUpScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // "Create Account" Text
             Text(
                 text = "Create Account",
                 color = Color.Black,
@@ -107,7 +104,6 @@ fun SignUpScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Full Name input field
             TextField(
                 value = fullName.value,
                 onValueChange = { fullName.value = it },
@@ -125,7 +121,6 @@ fun SignUpScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Email input field
             TextField(
                 value = email.value,
                 onValueChange = { email.value = it },
@@ -143,24 +138,20 @@ fun SignUpScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Password input field
             PasswordTextField(password = password, label = "Password")
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Confirm Password input field
             PasswordTextField(password = confirmPassword, label = "Confirm Password")
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Sign-Up Button
             Button(
                 onClick = {
                     if (fullName.value.text.isNotEmpty() && email.value.text.isNotEmpty() &&
                         password.value.text.isNotEmpty() && confirmPassword.value.text.isNotEmpty()
                     ) {
                         if (password.value.text == confirmPassword.value.text) {
-                            // Handle sign-up logic here
                             navController.navigate("HomeScreen")
                         } else {
                             Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
@@ -185,7 +176,6 @@ fun SignUpScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Navigation to Sign-In page
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
@@ -207,6 +197,26 @@ fun SignUpScreen(navController: NavController) {
                     }
                 )
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+                    navController.navigate("SelectScreen")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = "Continue as Guest",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }
@@ -223,7 +233,7 @@ fun PasswordTextField(password: MutableState<TextFieldValue>, label: String) {
     TextField(
         value = password.value,
         onValueChange = { password.value = it },
-        label = { Text(label) }, // Use dynamic label here
+        label = { Text(label) },
         modifier = Modifier
             .fillMaxWidth()
             .border(1.dp, LightGray, RoundedCornerShape(12.dp)),

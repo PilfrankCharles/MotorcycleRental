@@ -162,9 +162,29 @@ fun BookingButton(description: String, rate: String, navController: NavControlle
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modifier) {
     var selectedItem by remember { mutableStateOf(0) }
+    var showProfileSheet by remember { mutableStateOf(false) }
+
+    if (showProfileSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showProfileSheet = false },
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ) {
+            ProfileSheetContent(
+                onLoginClick = {
+                    showProfileSheet = false
+                    navController.navigate("LoginScreen")
+                },
+                onLogoutClick = {
+                    showProfileSheet = false
+                    //ani ang log out
+                }
+            )
+        }
+    }
 
     NavigationBar(containerColor = Color.White, contentColor = Color.Black) {
         NavigationBarItem(
@@ -193,8 +213,46 @@ fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modif
             icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
             label = { Text("Profile") },
             selected = selectedItem == 3,
-            onClick = { selectedItem = 3 }
+            onClick = {
+                selectedItem = 3
+                showProfileSheet = true
+            }
         )
+    }
+}
+
+@Composable
+fun ProfileSheetContent(onLoginClick: () -> Unit, onLogoutClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = Icons.Default.Person,
+            contentDescription = "User Profile",
+            modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = "User Profile", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = onLoginClick,
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "Log In", color = Color.White)
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = onLogoutClick,
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "Log Out", color = Color.White)
+        }
     }
 }
 
