@@ -38,6 +38,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -146,13 +147,29 @@ fun SignUpScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            val auth = FirebaseAuth.getInstance()
+
             Button(
                 onClick = {
                     if (fullName.value.text.isNotEmpty() && email.value.text.isNotEmpty() &&
                         password.value.text.isNotEmpty() && confirmPassword.value.text.isNotEmpty()
                     ) {
                         if (password.value.text == confirmPassword.value.text) {
-                            navController.navigate("HomeScreen")
+                            auth.createUserWithEmailAndPassword(
+                                email.value.text.trim(),
+                                password.value.text.trim()
+                            ).addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    Toast.makeText(context, "Sign-up successful!", Toast.LENGTH_SHORT).show()
+                                    navController.navigate("HomeScreen")
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Sign-up failed: ${task.exception?.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
                         } else {
                             Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
                         }
@@ -173,7 +190,6 @@ fun SignUpScreen(navController: NavController) {
                     fontWeight = FontWeight.Bold
                 )
             }
-
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
