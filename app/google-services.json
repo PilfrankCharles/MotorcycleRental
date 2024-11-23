@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "392676608728",
+    "project_id": "motorcycle-rental-cd021",
+    "storage_bucket": "motorcycle-rental-cd021.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:392676608728:android:f9871186db6c6c4447e5ad",
+        "android_client_info": {
+          "package_name": "com.example.motorcyclerental"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAe9x7d2tUjHK1SThXQr9fLTXa7zUGFCJo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
