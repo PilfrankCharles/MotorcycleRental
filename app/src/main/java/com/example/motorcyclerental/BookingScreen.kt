@@ -42,9 +42,11 @@ fun BookingScreen(bikeName: String, rate: String, navController: NavController) 
                 title = { Spacer(modifier = Modifier.width(0.dp)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack,
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color.Black)
+                            tint = Color.Black
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
@@ -77,9 +79,15 @@ fun BookingScreen(bikeName: String, rate: String, navController: NavController) 
                         modifier = Modifier.padding(bottom = 24.dp)
                     )
 
-                    RateOption("Daily Rate", selectedRate == "Daily Rate") { selectedRate = "Daily Rate" }
-                    RateOption("Weekly Rate", selectedRate == "Weekly Rate") { selectedRate = "Weekly Rate" }
-                    RateOption("Monthly Rate", selectedRate == "Monthly Rate") { selectedRate = "Monthly Rate" }
+                    RateOption("Daily Rate", selectedRate == "Daily Rate") {
+                        selectedRate = "Daily Rate"
+                    }
+                    RateOption("Weekly Rate", selectedRate == "Weekly Rate") {
+                        selectedRate = "Weekly Rate"
+                    }
+                    RateOption("Monthly Rate", selectedRate == "Monthly Rate") {
+                        selectedRate = "Monthly Rate"
+                    }
                 }
 
                 Box(
@@ -90,8 +98,10 @@ fun BookingScreen(bikeName: String, rate: String, navController: NavController) 
                 ) {
                     Button(
                         onClick = { showDialog = true },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF316FF6),
-                            contentColor = Color.White),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF316FF6),
+                            contentColor = Color.White
+                        ),
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -108,7 +118,13 @@ fun BookingScreen(bikeName: String, rate: String, navController: NavController) 
                 text = { Text(text = "Are you sure you want to confirm the booking?") },
                 confirmButton = {
                     TextButton(onClick = {
-                        navController.navigate("Wala Pa Tawn")
+                        // Add booking to BookingManager
+                        BookingManager.addBooking(
+                            bikeName = bikeName,
+                            rateType = selectedRate,
+                            totalCost = rate // Assuming rate is already correctly formatted
+                        )
+                        navController.navigate("BookingHistoryScreen") // Ensure the route matches
                         showDialog = false
                     }) {
                         Text("Yes")
@@ -121,18 +137,10 @@ fun BookingScreen(bikeName: String, rate: String, navController: NavController) 
                 }
             )
         }
-
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-        ) {
-            BottomNavigationBar(navController, modifier = Modifier.fillMaxWidth())
-        }
     }
 }
 
-@Composable
+        @Composable
 fun RateOption(
     label: String,
     isSelected: Boolean,
@@ -167,4 +175,3 @@ fun RateOption(
         )
     }
 }
-

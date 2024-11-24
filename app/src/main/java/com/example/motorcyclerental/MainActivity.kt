@@ -50,6 +50,10 @@ class MainActivity : ComponentActivity() {
                     BookingScreen(bikeName = bikeName, rate = rate, navController = navController)
                 }
 
+                composable("BookingHistoryScreen") {
+                    BookingHistoryScreen(navController)
+                }
+
                 composable("LoginScreen") {
                     LoginScreen(navController)
                 }
