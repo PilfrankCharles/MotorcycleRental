@@ -161,7 +161,7 @@ fun SignUpScreen(navController: NavController) {
                             ).addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     Toast.makeText(context, "Sign-up successful!", Toast.LENGTH_SHORT).show()
-                                    navController.navigate("HomeScreen")
+                                    navController.navigate("LoginScreen")
                                 } else {
                                     Toast.makeText(
                                         context,

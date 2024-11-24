@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -180,7 +181,10 @@ fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modif
                 },
                 onLogoutClick = {
                     showProfileSheet = false
-                    //ani ang log out
+                    FirebaseAuth.getInstance().signOut()
+                    navController.navigate("LoginScreen") {
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                    }
                 }
             )
         }
