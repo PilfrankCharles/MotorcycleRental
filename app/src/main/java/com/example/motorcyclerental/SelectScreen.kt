@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -100,11 +102,13 @@ fun SelectScreen(navController: NavController) {
             )
 
             Column(
-                modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp)
             ) {
-                Spacer(modifier = Modifier.height(120.dp))
+                Spacer(modifier = Modifier.height(60.dp))
 
                 Text(
                     text = buildAnnotatedString {
@@ -117,40 +121,37 @@ fun SelectScreen(navController: NavController) {
                     fontWeight = FontWeight.Bold
                 )
 
-                Spacer(modifier = Modifier.height(42.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    contentPadding = PaddingValues(horizontal = 8.dp)
+                // First row with two boxes
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
                 ) {
-                    items(4) { index ->
+                    repeat(2) { index ->
                         val imageResource = when (index) {
                             0 -> R.drawable.honda_logo_nbg
                             1 -> R.drawable.yamaha_logo_nbg
-                            2 -> R.drawable.suzuki_logo_nbg
-                            3 -> R.drawable.kawasaki_logo_nbg
                             else -> R.drawable.placeholder
                         }
 
                         val descriptions = listOf(
                             "Honda – The Power of Dreams",
-                            "Yamaha – Revs Your Heart",
-                            "Suzuki – Way of Life!",
-                            "Kawasaki – Let the Good Times Roll"
+                            "Yamaha – Revs Your Heart"
                         )
 
                         val brandName = when (index) {
                             0 -> "Honda"
                             1 -> "Yamaha"
-                            2 -> "Suzuki"
-                            3 -> "Kawasaki"
                             else -> "Unknown"
                         }
 
                         Box(
                             modifier = Modifier
-                                .width(220.dp)
-                                .height(320.dp)
+                                .width(150.dp)
+                                .height(220.dp)
                                 .border(2.dp, Color.DarkGray, RoundedCornerShape(18.dp))
                                 .clickable {
                                     navController.navigate("imageList/$brandName")
@@ -165,12 +166,69 @@ fun SelectScreen(navController: NavController) {
                                     painter = painterResource(id = imageResource),
                                     contentDescription = "Image Placeholder ${index + 1}",
                                     modifier = Modifier
-                                        .size(160.dp)
+                                        .size(110.dp)
                                         .clip(RoundedCornerShape(12.dp))
                                 )
                                 Text(
                                     text = descriptions[index],
-                                    fontSize = 12.sp,
+                                    fontSize = 10.sp,
+                                    color = Color.Black,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Second row with two boxes
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                ) {
+                    repeat(2) { index ->
+                        val imageResource = when (index) {
+                            0 -> R.drawable.suzuki_logo_nbg
+                            1 -> R.drawable.kawasaki_logo_nbg
+                            else -> R.drawable.placeholder
+                        }
+
+                        val descriptions = listOf(
+                            "Suzuki – Way of Life!",
+                            "Kawasaki – Let the Good \n             Times Roll"
+                        )
+
+                        val brandName = when (index) {
+                            0 -> "Suzuki"
+                            1 -> "Kawasaki"
+                            else -> "Unknown"
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .width(150.dp)
+                                .height(220.dp)
+                                .border(2.dp, Color.DarkGray, RoundedCornerShape(18.dp))
+                                .clickable {
+                                    navController.navigate("imageList/$brandName")
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = imageResource),
+                                    contentDescription = "Image Placeholder ${index + 3}",
+                                    modifier = Modifier
+                                        .size(110.dp)
+                                        .clip(RoundedCornerShape(12.dp))
+                                )
+                                Text(
+                                    text = descriptions[index],
+                                    fontSize = 10.sp,
                                     color = Color.Black,
                                     modifier = Modifier.padding(top = 8.dp)
                                 )

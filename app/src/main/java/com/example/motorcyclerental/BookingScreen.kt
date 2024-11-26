@@ -154,7 +154,7 @@ fun RateOption(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(4.dp)
             .clickable(onClick = onSelectedChange)
             .background(backgroundColor, shape = MaterialTheme.shapes.medium)
             .clip(MaterialTheme.shapes.medium)
