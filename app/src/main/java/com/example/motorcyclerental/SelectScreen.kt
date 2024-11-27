@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -123,7 +121,6 @@ fun SelectScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // First row with two boxes
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier
@@ -150,9 +147,9 @@ fun SelectScreen(navController: NavController) {
 
                         Box(
                             modifier = Modifier
-                                .width(150.dp)
-                                .height(220.dp)
-                                .border(2.dp, Color.DarkGray, RoundedCornerShape(18.dp))
+                                .width(172.dp)
+                                .height(242.dp)
+                                .border(1.dp, Color.DarkGray, RoundedCornerShape(18.dp))
                                 .clickable {
                                     navController.navigate("imageList/$brandName")
                                 },
@@ -180,7 +177,6 @@ fun SelectScreen(navController: NavController) {
                     }
                 }
 
-                // Second row with two boxes
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier
@@ -196,7 +192,7 @@ fun SelectScreen(navController: NavController) {
 
                         val descriptions = listOf(
                             "Suzuki – Way of Life!",
-                            "Kawasaki – Let the Good \n             Times Roll"
+                            "Kawasaki – Let the Good \nTimes Roll"
                         )
 
                         val brandName = when (index) {
@@ -207,9 +203,9 @@ fun SelectScreen(navController: NavController) {
 
                         Box(
                             modifier = Modifier
-                                .width(150.dp)
-                                .height(220.dp)
-                                .border(2.dp, Color.DarkGray, RoundedCornerShape(18.dp))
+                                .width(172.dp)
+                                .height(242.dp)
+                                .border(1.dp, Color.DarkGray, RoundedCornerShape(18.dp))
                                 .clickable {
                                     navController.navigate("imageList/$brandName")
                                 },

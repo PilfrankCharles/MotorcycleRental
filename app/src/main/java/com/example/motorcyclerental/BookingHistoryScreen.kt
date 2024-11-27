@@ -8,38 +8,41 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.motorcyclerental.ui.theme.MotorcycleRentalTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookingHistoryScreen(navController: NavController) {
-    val bookings = BookingManager.getAllBookings()
+    // List of bookings retrieved from Firebase
+    val bookings = remember { mutableStateListOf<BookingRecord>() }
+
+    // Fetch bookings from Firestore
+    LaunchedEffect(Unit) {
+        val fetchedBookings = BookingManager.getAllBookings()
+        bookings.addAll(fetchedBookings)
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                color = Color(0xFFF0F0F0), // Light background color for the Box
-                shape = RoundedCornerShape(16.dp) // Rounded corners
+                color = Color(0xFFF0F0F0),
+                shape = RoundedCornerShape(16.dp)
             )
-            .padding(16.dp) // Padding for the Box content
+            .padding(16.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(top = 16.dp) // Padding to avoid sticking to the top
+                .padding(top = 16.dp)
         ) {
             TopAppBar(
                 title = {
@@ -54,22 +57,24 @@ fun BookingHistoryScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Displaying all the bookings in a list
             bookings.forEach { booking ->
                 BookingItem(booking = booking)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Button to clear all booking history
             Button(
                 onClick = { BookingManager.clearAllBookings() },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF1877F2) // Color of the clear button
+                    containerColor = Color(0xFF1877F2)
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 42.dp)
-                    .clip(RoundedCornerShape(12.dp)) // Rounded corners for the button
+                    .clip(RoundedCornerShape(12.dp))
             ) {
                 Text("Clear All Booking History", color = Color.White)
             }
@@ -83,8 +88,7 @@ fun BookingItem(booking: BookingRecord) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .background(Color.White, shape = RoundedCornerShape(12.dp)) // Rounded corners and white background for each item
-            .shadow(5.dp, RoundedCornerShape(12.dp)) // Shadow effect for depth
+            .background(Color.White, shape = RoundedCornerShape(12.dp))
             .padding(16.dp)
     ) {
         Text("Bike Name: ${booking.bikeName}", fontWeight = FontWeight.Bold, fontSize = 16.sp)

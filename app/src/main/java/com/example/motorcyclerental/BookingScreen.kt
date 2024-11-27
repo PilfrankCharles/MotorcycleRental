@@ -122,9 +122,9 @@ fun BookingScreen(bikeName: String, rate: String, navController: NavController) 
                         BookingManager.addBooking(
                             bikeName = bikeName,
                             rateType = selectedRate,
-                            totalCost = rate // Assuming rate is already correctly formatted
+                            totalCost = rate
                         )
-                        navController.navigate("BookingHistoryScreen") // Ensure the route matches
+                        navController.navigate("BookingHistoryScreen")
                         showDialog = false
                     }) {
                         Text("Yes")

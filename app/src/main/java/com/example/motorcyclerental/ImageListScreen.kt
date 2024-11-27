@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -97,29 +99,49 @@ fun ImageCard(
 ) {
     val (imageResId, description) = image
     var showRates by remember { mutableStateOf(false) }
+    var isFavorite by remember { mutableStateOf(false) }
+
+    val favoriteColor = if (isFavorite) Color.Red else Color.Gray
 
     Box(
         modifier = Modifier
-            .size(width = 150.dp, height = 250.dp)
-            .border(1.dp, Color.Black, RoundedCornerShape(18.dp))
+            .size(width = 138.dp, height = 240.dp)
+            .border(1.dp, Color.DarkGray, RoundedCornerShape(18.dp))
             .padding(2.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Box(modifier = Modifier.fillMaxSize()) {
             Image(
                 painter = painterResource(id = imageResId),
                 contentDescription = description,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .weight(0.8f)
                     .fillMaxWidth()
+                    .height(172.dp)
                     .clip(RoundedCornerShape(18.dp))
             )
 
+            IconButton(
+                onClick = {
+                    isFavorite = !isFavorite
+                },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 8.dp, end = 8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = "Favorite",
+                    tint = favoriteColor
+                )
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
@@ -140,7 +162,14 @@ fun ImageCard(
             AnimatedVisibility(visible = showRates, enter = expandVertically(), exit = shrinkVertically()) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = rate, fontSize = 14.sp, modifier = Modifier.padding(4.dp))
+                    Text(
+                        text = rate,
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .background(Color.White)
+                            .padding(8.dp)
+                    )
                     BookingButton(description, rate, navController)
                 }
             }
@@ -156,10 +185,21 @@ fun BookingButton(description: String, rate: String, navController: NavControlle
             val encodedRate = rate.toUri().toString()
             navController.navigate("BookingScreen/$encodedDescription/$encodedRate")
         },
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF316FF6)),
-        modifier = Modifier.padding(top = 8.dp)
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFFFFF)),
+        modifier = Modifier
+            .padding(top = 8.dp)
+            .border(
+                width = 1.dp,
+                color = Color.LightGray,
+                shape = RoundedCornerShape(8.dp)
+            )
     ) {
-        Text(text = "Proceed to Booking", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        Text(
+            text = "Proceed to Booking",
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
+        )
     }
 }
 
@@ -168,6 +208,7 @@ fun BookingButton(description: String, rate: String, navController: NavControlle
 fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modifier) {
     var selectedItem by remember { mutableStateOf(0) }
     var showProfileSheet by remember { mutableStateOf(false) }
+    var favoriteItems by remember { mutableStateOf(listOf<Pair<Int, String>>()) }
 
     if (showProfileSheet) {
         ModalBottomSheet(
@@ -205,7 +246,11 @@ fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modif
             icon = { Icon(Icons.Default.Favorite, contentDescription = "Saved") },
             label = { Text("Saved") },
             selected = selectedItem == 1,
-            onClick = { selectedItem = 1 }
+            onClick = {
+                // Here, we need to navigate to the Saved screen and pass the favorite items
+                navController.navigate("SavedScreen/${favoriteItems.joinToString(",")}")
+                selectedItem = 1
+            }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.Notifications, contentDescription = "Notification") },
@@ -252,7 +297,7 @@ fun ProfileSheetContent(onLoginClick: () -> Unit, onLogoutClick: () -> Unit) {
         Spacer(modifier = Modifier.height(8.dp))
         Button(
             onClick = onLogoutClick,
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = "Log Out", color = Color.White)

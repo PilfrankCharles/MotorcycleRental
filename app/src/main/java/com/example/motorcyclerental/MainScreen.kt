@@ -22,11 +22,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 
-
 @Composable
 fun MainScreen(navController: NavController) {
     Box(modifier = Modifier.fillMaxSize()) {
-        // Background image
         Image(
             painter = painterResource(id = R.drawable.backg),
             contentDescription = "Background Image",
@@ -39,7 +37,7 @@ fun MainScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 28.dp)
-                .padding(top = 50.dp), // Adjust top padding to move content up
+                .padding(top = 50.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -52,9 +50,8 @@ fun MainScreen(navController: NavController) {
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(52.dp)) // Space between title and logo
+            Spacer(modifier = Modifier.height(52.dp))
 
-            // Logo
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "MainScreen Logo",
@@ -62,7 +59,7 @@ fun MainScreen(navController: NavController) {
                     .size(220.dp)
             )
 
-            Spacer(modifier = Modifier.height(52.dp)) // Space between logo and button
+            Spacer(modifier = Modifier.height(152.dp)) // Space between logo and button
 
             // Button
             Button(
@@ -85,9 +82,8 @@ fun MainScreen(navController: NavController) {
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp)) // Space between button and sign-in text
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Already have an account? Sign In
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
