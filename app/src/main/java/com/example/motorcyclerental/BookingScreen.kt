@@ -1,5 +1,6 @@
 package com.example.motorcyclerental
 
+import android.widget.Toast
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,11 +11,13 @@ import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -24,7 +27,8 @@ import androidx.navigation.NavController
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookingScreen(bikeName: String, rate: String, navController: NavController) {
-    var selectedRate by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    var selectedRate by rememberSaveable { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -53,6 +57,7 @@ fun BookingScreen(bikeName: String, rate: String, navController: NavController) 
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // Main content column
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -88,13 +93,23 @@ fun BookingScreen(bikeName: String, rate: String, navController: NavController) 
                     RateOption("Monthly Rate", selectedRate == "Monthly Rate") {
                         selectedRate = "Monthly Rate"
                     }
+
+                    if (selectedRate.isNotEmpty()) {
+                        Text(
+                            text = "Selected: $selectedRate",
+                            fontSize = 16.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
                 }
+
 
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 32.dp)
-                        .padding(bottom = 280.dp)
+                        .padding(bottom = 80.dp)
                 ) {
                     Button(
                         onClick = { showDialog = true },
@@ -118,20 +133,23 @@ fun BookingScreen(bikeName: String, rate: String, navController: NavController) 
                 text = { Text(text = "Are you sure you want to confirm the booking?") },
                 confirmButton = {
                     TextButton(onClick = {
-                        // Add booking logic
+                        // Call BookingManager to add booking (update this with Firebase functionality)
                         BookingManager.addBooking(
                             bikeName = bikeName,
                             rateType = selectedRate,
                             totalCost = rate,
                             onSuccess = {
-                                // Navigate to Booking History Screen after success
+                                showDialog = false
                                 navController.navigate("BookingHistoryScreen") {
                                     popUpTo("BookingScreen") { inclusive = true }
                                 }
-                                showDialog = false
                             },
                             onFailure = { exception ->
-                                // Handle error if needed (e.g., show a Toast or Snackbar)
+                                Toast.makeText(
+                                    context,
+                                    "Failed to confirm booking: ${exception.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 showDialog = false
                             }
                         )

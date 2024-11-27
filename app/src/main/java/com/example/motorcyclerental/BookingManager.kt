@@ -10,25 +10,29 @@ object BookingManager {
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
-    // Local state list for holding booking records
     private val _bookingRecords: SnapshotStateList<BookingRecord> = mutableStateListOf()
     val bookingRecords: SnapshotStateList<BookingRecord> get() = _bookingRecords
 
-    // Add a booking to Firestore and update local state
-    fun addBooking(bikeName: String, rateType: String, totalCost: String, onSuccess: () -> Unit = {}, onFailure: (Exception) -> Unit = {}) {
+    fun addBooking(
+        bikeName: String,
+        rateType: String,
+        totalCost: String,
+        onSuccess: () -> Unit = {},
+        onFailure: (Exception) -> Unit = {}
+    ) {
         val timestamp = System.currentTimeMillis()
         val newBooking = BookingRecord(bikeName, rateType, totalCost, timestamp)
 
-        // Check if user is logged in
         val userId = auth.currentUser?.uid
         if (userId == null) {
-            onFailure(Exception("User not logged in"))
+            onFailure(Exception("User is not logged in"))
             return
         }
 
-        // Save to Firestore
-        db.collection("users").document(userId).collection("bookings")
-            .add(newBooking)
+        db.collection("users")
+            .document(userId)
+            .collection("bookings")
+            .add(newBooking.toMap())
             .addOnSuccessListener {
                 // Update local state
                 _bookingRecords.add(newBooking)
@@ -39,24 +43,27 @@ object BookingManager {
             }
     }
 
-    // Fetch all bookings from Firestore and update the local state list
-    fun fetchAllBookings(onSuccess: () -> Unit = {}, onFailure: (Exception) -> Unit = {}) {
+    fun fetchAllBookings(
+        onSuccess: () -> Unit = {},
+        onFailure: (Exception) -> Unit = {}
+    ) {
         val userId = auth.currentUser?.uid
         if (userId == null) {
-            onFailure(Exception("User not logged in"))
+            onFailure(Exception("User is not logged in"))
             return
         }
 
-        db.collection("users").document(userId).collection("bookings")
+        db.collection("users")
+            .document(userId)
+            .collection("bookings")
             .get()
             .addOnSuccessListener { result ->
-                // Map Firestore documents to BookingRecord objects
-                val bookings = result.documents.mapNotNull { it.toObject(BookingRecord::class.java) }
+                val bookings = result.documents.mapNotNull { doc ->
+                    doc.data?.let { BookingRecord.fromMap(it) }
+                }
 
-                // Update local state
                 _bookingRecords.clear()
                 _bookingRecords.addAll(bookings)
-
                 onSuccess()
             }
             .addOnFailureListener { exception ->
@@ -64,27 +71,29 @@ object BookingManager {
             }
     }
 
-    // Clear all bookings from Firestore and local state list
-    fun clearAllBookings(onSuccess: () -> Unit = {}, onFailure: (Exception) -> Unit = {}) {
+    fun clearAllBookings(
+        onSuccess: () -> Unit = {},
+        onFailure: (Exception) -> Unit = {}
+    ) {
         val userId = auth.currentUser?.uid
         if (userId == null) {
-            onFailure(Exception("User not logged in"))
+            onFailure(Exception("User is not logged in"))
             return
         }
 
-        db.collection("users").document(userId).collection("bookings")
+        db.collection("users")
+            .document(userId)
+            .collection("bookings")
             .get()
             .addOnSuccessListener { result ->
                 val batch = db.batch()
 
-                // Delete all documents in the collection
                 result.documents.forEach { document ->
                     batch.delete(document.reference)
                 }
 
                 batch.commit()
                     .addOnSuccessListener {
-                        // Clear local state
                         _bookingRecords.clear()
                         onSuccess()
                     }
@@ -95,5 +104,30 @@ object BookingManager {
             .addOnFailureListener { exception ->
                 onFailure(exception)
             }
+    }
+}
+
+data class BookingRecord(
+    val bikeName: String,
+    val rateType: String,
+    val totalCost: String,
+    val timestamp: Long
+) {
+    fun toMap(): Map<String, Any> = mapOf(
+        "bikeName" to bikeName,
+        "rateType" to rateType,
+        "totalCost" to totalCost,
+        "timestamp" to timestamp
+    )
+
+    companion object {
+        fun fromMap(map: Map<String, Any>): BookingRecord {
+            return BookingRecord(
+                bikeName = map["bikeName"] as String,
+                rateType = map["rateType"] as String,
+                totalCost = map["totalCost"] as String,
+                timestamp = map["timestamp"] as Long
+            )
+        }
     }
 }

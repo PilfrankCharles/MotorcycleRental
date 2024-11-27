@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.Locale
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,6 +27,7 @@ fun BookingHistoryScreen(navController: NavController) {
     val bookings = BookingManager.bookingRecords
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    val coroutineScope = rememberCoroutineScope()
 
     // Fetch bookings from Firestore
     LaunchedEffect(Unit) {
@@ -44,85 +45,94 @@ fun BookingHistoryScreen(navController: NavController) {
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF0F0F0))
-            .padding(16.dp)
-    ) {
-        if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        } else if (errorMessage != null) {
-            // Show error message
-            Text(
-                text = errorMessage ?: "Unknown error occurred.",
-                modifier = Modifier.align(Alignment.Center),
-                fontSize = 16.sp,
-                color = Color.Red
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text("Booking History", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
             )
-        } else if (bookings.isEmpty()) {
-            // Show "no bookings" message
-            Text(
-                text = "No booking history found.",
-                modifier = Modifier.align(Alignment.Center),
-                fontSize = 16.sp,
-                color = Color.Gray
-            )
-        } else {
-            // Display bookings in a scrollable column
-            Column(
+        },
+        content = { innerPadding ->
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(top = 16.dp)
+                    .background(Color(0xFFF0F0F0))
+                    .padding(innerPadding)
             ) {
-                TopAppBar(
-                    title = {
-                        Text("Booking History", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                bookings.forEach { booking ->
-                    BookingItem(booking = booking)
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    onClick = {
-                        // Clear all bookings
-                        isLoading = true
-                        errorMessage = null
-                        BookingManager.clearAllBookings(
-                            onSuccess = {
-                                bookings.clear()
-                                isLoading = false
-                            },
-                            onFailure = { e ->
-                                errorMessage = "Failed to clear bookings: ${e.message}"
-                                isLoading = false
-                            }
+                when {
+                    isLoading -> {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                    errorMessage != null -> {
+                        Text(
+                            text = errorMessage ?: "Unknown error occurred.",
+                            modifier = Modifier.align(Alignment.Center),
+                            fontSize = 16.sp,
+                            color = Color.Red
                         )
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1877F2)),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                ) {
-                    Text("Clear All Booking History", color = Color.White)
+                    }
+                    bookings.isEmpty() -> {
+                        Text(
+                            text = "No booking history found.",
+                            modifier = Modifier.align(Alignment.Center),
+                            fontSize = 16.sp,
+                            color = Color.Gray
+                        )
+                    }
+                    else -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState())
+                                .padding(16.dp)
+                        ) {
+                            bookings.forEach { booking ->
+                                BookingItem(booking = booking)
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Button(
+                                onClick = {
+                                    coroutineScope.launch {
+                                        isLoading = true
+                                        errorMessage = null
+                                        BookingManager.clearAllBookings(
+                                            onSuccess = {
+                                                bookings.clear()
+                                                isLoading = false
+                                            },
+                                            onFailure = { e ->
+                                                errorMessage = "Failed to clear bookings: ${e.message}"
+                                                isLoading = false
+                                            }
+                                        )
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1877F2)),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                            ) {
+                                Text("Clear All Booking History", color = Color.White)
+                            }
+                        }
+                    }
                 }
             }
         }
-    }
+    )
 }
 
 @Composable
@@ -130,7 +140,6 @@ fun BookingItem(booking: BookingRecord) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
             .background(Color.White, shape = RoundedCornerShape(12.dp))
             .padding(16.dp)
     ) {
@@ -138,7 +147,9 @@ fun BookingItem(booking: BookingRecord) {
         Text("Rate Type: ${booking.rateType}", fontSize = 14.sp)
         Text("Total Cost: ${booking.totalCost}", fontSize = 14.sp)
         Text(
-            "Date: ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(booking.timestamp)}",
+            "Date: ${
+                SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(booking.timestamp)
+            }",
             fontSize = 12.sp
         )
     }
