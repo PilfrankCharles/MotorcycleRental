@@ -118,14 +118,23 @@ fun BookingScreen(bikeName: String, rate: String, navController: NavController) 
                 text = { Text(text = "Are you sure you want to confirm the booking?") },
                 confirmButton = {
                     TextButton(onClick = {
-                        // Add booking to BookingManager
+                        // Add booking logic
                         BookingManager.addBooking(
                             bikeName = bikeName,
                             rateType = selectedRate,
-                            totalCost = rate
+                            totalCost = rate,
+                            onSuccess = {
+                                // Navigate to Booking History Screen after success
+                                navController.navigate("BookingHistoryScreen") {
+                                    popUpTo("BookingScreen") { inclusive = true }
+                                }
+                                showDialog = false
+                            },
+                            onFailure = { exception ->
+                                // Handle error if needed (e.g., show a Toast or Snackbar)
+                                showDialog = false
+                            }
                         )
-                        navController.navigate("BookingHistoryScreen")
-                        showDialog = false
                     }) {
                         Text("Yes")
                     }
@@ -140,7 +149,7 @@ fun BookingScreen(bikeName: String, rate: String, navController: NavController) 
     }
 }
 
-        @Composable
+@Composable
 fun RateOption(
     label: String,
     isSelected: Boolean,

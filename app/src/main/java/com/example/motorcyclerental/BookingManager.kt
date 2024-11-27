@@ -2,72 +2,98 @@ package com.example.motorcyclerental
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import java.util.*
 
 object BookingManager {
 
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
-    // Local state list for holding booking records (this will still be used for UI updates)
-    private val bookingRecords: SnapshotStateList<BookingRecord> = mutableStateListOf()
+    // Local state list for holding booking records
+    private val _bookingRecords: SnapshotStateList<BookingRecord> = mutableStateListOf()
+    val bookingRecords: SnapshotStateList<BookingRecord> get() = _bookingRecords
 
-    // Add booking to both Firestore and local state
-    fun addBooking(bikeName: String, rateType: String, totalCost: String) {
+    // Add a booking to Firestore and update local state
+    fun addBooking(bikeName: String, rateType: String, totalCost: String, onSuccess: () -> Unit = {}, onFailure: (Exception) -> Unit = {}) {
         val timestamp = System.currentTimeMillis()
         val newBooking = BookingRecord(bikeName, rateType, totalCost, timestamp)
 
-        // Save to Firestore
+        // Check if user is logged in
         val userId = auth.currentUser?.uid
-        if (userId != null) {
-            val bookingRef = db.collection("users").document(userId).collection("bookings")
-            bookingRef.add(newBooking)
+        if (userId == null) {
+            onFailure(Exception("User not logged in"))
+            return
         }
 
-        // Add to local state list (for UI updates)
-        bookingRecords.add(newBooking)
+        // Save to Firestore
+        db.collection("users").document(userId).collection("bookings")
+            .add(newBooking)
+            .addOnSuccessListener {
+                // Update local state
+                _bookingRecords.add(newBooking)
+                onSuccess()
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception)
+            }
     }
 
-    // Get all bookings from Firestore and update local state list
-    fun getAllBookings(): List<BookingRecord> {
-        val bookings = mutableListOf<BookingRecord>()
+    // Fetch all bookings from Firestore and update the local state list
+    fun fetchAllBookings(onSuccess: () -> Unit = {}, onFailure: (Exception) -> Unit = {}) {
         val userId = auth.currentUser?.uid
-        if (userId != null) {
-            db.collection("users").document(userId).collection("bookings")
-                .get()
-                .addOnSuccessListener { result ->
-                    bookings.clear()  // Clear any existing bookings in the list
-                    for (document in result.documents) {
-                        val booking = document.toObject(BookingRecord::class.java)
-                        if (booking != null) {
-                            bookings.add(booking)
-                        }
-                    }
-                    bookingRecords.clear()
-                    bookingRecords.addAll(bookings)  // Update local state list
-                }
+        if (userId == null) {
+            onFailure(Exception("User not logged in"))
+            return
         }
-        return bookings
+
+        db.collection("users").document(userId).collection("bookings")
+            .get()
+            .addOnSuccessListener { result ->
+                // Map Firestore documents to BookingRecord objects
+                val bookings = result.documents.mapNotNull { it.toObject(BookingRecord::class.java) }
+
+                // Update local state
+                _bookingRecords.clear()
+                _bookingRecords.addAll(bookings)
+
+                onSuccess()
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception)
+            }
     }
 
     // Clear all bookings from Firestore and local state list
-    fun clearAllBookings() {
+    fun clearAllBookings(onSuccess: () -> Unit = {}, onFailure: (Exception) -> Unit = {}) {
         val userId = auth.currentUser?.uid
-        if (userId != null) {
-            val bookingRef = db.collection("users").document(userId).collection("bookings")
-            bookingRef.get().addOnSuccessListener { result ->
-                for (document in result.documents) {
-                    document.reference.delete()
-                }
-            }
+        if (userId == null) {
+            onFailure(Exception("User not logged in"))
+            return
         }
-        // Clear local state list
-        bookingRecords.clear()
-    }
 
-    // Accessor for the local state list
-    fun getLocalBookings(): List<BookingRecord> = bookingRecords
+        db.collection("users").document(userId).collection("bookings")
+            .get()
+            .addOnSuccessListener { result ->
+                val batch = db.batch()
+
+                // Delete all documents in the collection
+                result.documents.forEach { document ->
+                    batch.delete(document.reference)
+                }
+
+                batch.commit()
+                    .addOnSuccessListener {
+                        // Clear local state
+                        _bookingRecords.clear()
+                        onSuccess()
+                    }
+                    .addOnFailureListener { exception ->
+                        onFailure(exception)
+                    }
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception)
+            }
+    }
 }

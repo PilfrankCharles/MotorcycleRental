@@ -4,5 +4,5 @@ data class BookingRecord(
     val bikeName: String = "",
     val rateType: String = "",
     val totalCost: String = "",
-    val timestamp: Long
+    val timestamp: Long = 0L
 )
