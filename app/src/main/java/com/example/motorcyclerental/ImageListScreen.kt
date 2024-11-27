@@ -247,16 +247,18 @@ fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modif
             label = { Text("Saved") },
             selected = selectedItem == 1,
             onClick = {
-                // Here, we need to navigate to the Saved screen and pass the favorite items
-                navController.navigate("SavedScreen/${favoriteItems.joinToString(",")}")
+                navController.navigate("MainScreen/${favoriteItems.joinToString(",")}")
                 selectedItem = 1
             }
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Notifications, contentDescription = "Notification") },
-            label = { Text("Notification") },
+            icon = { Icon(Icons.Default.Book, contentDescription = "Bookings") },
+            label = { Text("Bookings") },
             selected = selectedItem == 2,
-            onClick = { selectedItem = 2 }
+            onClick = {
+                navController.navigate("BookingHistoryScreen")
+                selectedItem = 2
+            }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
