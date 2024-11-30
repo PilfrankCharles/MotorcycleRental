@@ -72,7 +72,7 @@ fun ApproveBookingScreen(navController: NavController){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Approvegit Booking",
+                text = "Approve Booking",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
