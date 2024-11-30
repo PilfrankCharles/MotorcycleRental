@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.motorcyclerental
 
 import android.widget.Toast
@@ -29,6 +31,7 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Suppress("DEPRECATION")
 @Composable
 fun LoginScreen(navController: NavController) {
     val email = remember { mutableStateOf(TextFieldValue()) }
@@ -119,21 +122,21 @@ fun LoginScreen(navController: NavController) {
                         auth.signInWithEmailAndPassword(enteredEmail, enteredPassword)
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
-                                    Toast.makeText(context, "Login successful!", Toast.LENGTH_SHORT).show()
-                                    navController.navigate("SelectScreen")
+                                    val user = auth.currentUser
+                                    user?.let {
+                                        if (it.email == "admin@gmail.com") { // Replace with your owner's email
+                                            Toast.makeText(context, "Welcome Admin!", Toast.LENGTH_SHORT).show()
+                                            navController.navigate("AdminDashboard")//ibutang diri puli ang name sa imong owner nga screen, pareha sa gihimo nimo sa katong navigation ba and then suwayi ug pa run nya if mogana ba
+                                        } else {
+                                            Toast.makeText(context, "Login successful!", Toast.LENGTH_SHORT).show()
+                                            navController.navigate("SelectScreen")
+                                        }
+                                    } ?: run {
+                                        Toast.makeText(context, "User not found.", Toast.LENGTH_SHORT).show()
+                                    }
                                 } else {
                                     val exceptionMessage = task.exception?.message ?: "Authentication failed"
-                                    when {
-                                        exceptionMessage.contains("no user record", ignoreCase = true) -> {
-                                            Toast.makeText(context, "Your email is wrong.", Toast.LENGTH_SHORT).show()
-                                        }
-                                        exceptionMessage.contains("password is invalid", ignoreCase = true) -> {
-                                            Toast.makeText(context, "Your password is wrong.", Toast.LENGTH_SHORT).show()
-                                        }
-                                        else -> {
-                                            Toast.makeText(context, exceptionMessage, Toast.LENGTH_SHORT).show()
-                                        }
-                                    }
+                                    Toast.makeText(context, exceptionMessage, Toast.LENGTH_SHORT).show()
                                 }
                             }
                     } else {
@@ -153,7 +156,6 @@ fun LoginScreen(navController: NavController) {
                     fontWeight = FontWeight.Bold
                 )
             }
-
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -189,6 +191,7 @@ fun LoginScreen(navController: NavController) {
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -61,6 +61,26 @@ class MainActivity : ComponentActivity() {
                 composable("SignUpScreen") {
                     SignUpScreen(navController)
                 }
+
+                composable("AdminDashboard"){
+                    AdminDashboard(navController)
+                }
+
+                composable("ManageMotorcycleDetails"){
+                    ManageMotorcycleDetails(navController)
+                }
+
+                composable("ManageBookingScreen"){
+                    ManageBookingScreen(navController)
+                }
+
+                composable("ApproveBookingScreen"){
+                    ApproveBookingScreen(navController)
+                }
+
+                composable("RejectBookingScreen"){
+                    RejectBookingScreen(navController)
+                }
             }
         }
     }
