@@ -1,5 +1,6 @@
 package com.example.motorcyclerental
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -20,12 +21,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -223,9 +229,13 @@ fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modif
                 onLogoutClick = {
                     showProfileSheet = false
                     FirebaseAuth.getInstance().signOut()
-                    navController.navigate("LoginScreen") {
+                    navController.navigate("MainScreen") {
                         popUpTo(navController.graph.startDestinationId) { inclusive = true }
                     }
+                },
+                onEditProfileClick = {
+                    showProfileSheet = false
+                    navController.navigate("EditProfileScreen") // Navigate to Edit Profile
                 }
             )
         }
@@ -273,22 +283,43 @@ fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modif
 }
 
 @Composable
-fun ProfileSheetContent(onLoginClick: () -> Unit, onLogoutClick: () -> Unit) {
+fun ProfileSheetContent(
+    onLoginClick: () -> Unit,
+    onLogoutClick: () -> Unit,
+    onEditProfileClick: () -> Unit
+) {
+    val user = FirebaseAuth.getInstance().currentUser
+    val email = user?.email ?: "No user logged in"
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Profile Icon
         Icon(
             imageVector = Icons.Default.Person,
             contentDescription = "User Profile",
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.primary
         )
+
+        // Spacer
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "User Profile", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+
+        // User Email
+        Text(
+            text = email,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Light,
+            color = Color.Gray,
+            modifier = Modifier.padding(top = 4.dp)
+        )
+
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Login Button
         Button(
             onClick = onLoginClick,
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
@@ -296,10 +327,13 @@ fun ProfileSheetContent(onLoginClick: () -> Unit, onLogoutClick: () -> Unit) {
         ) {
             Text(text = "Log In", color = Color.White)
         }
+
         Spacer(modifier = Modifier.height(8.dp))
+
+        // Logout Button
         Button(
             onClick = onLogoutClick,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = "Log Out", color = Color.White)

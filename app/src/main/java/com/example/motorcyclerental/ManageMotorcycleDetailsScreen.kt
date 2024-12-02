@@ -1,80 +1,111 @@
-package com.example.motorcyclerental
-
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.* // Compose UI foundation
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.* // Material3 components
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 
 @Composable
-fun ManageMotorcycleDetails(navController: NavController) {
+fun ManageMotorcycleDetailsScreen() {
+    // Simulated list of motorcycles
+    var motorcycleList by remember { mutableStateOf(listOf(Motorcycle("Honda CBR500R"), Motorcycle("Yamaha R3"))) }
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedMotorcycle by remember { mutableStateOf<Motorcycle?>(null) }
+    var newMotorcycleName by remember { mutableStateOf("") }
+
+    // Main UI
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Back Arrow
-        IconButton(onClick = { navController.popBackStack() }) {
-            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+        // Motorcycle List
+        LazyColumn(modifier = Modifier.fillMaxSize().padding(top = 16.dp)) {
+            items(motorcycleList) { motorcycle ->
+                MotorcycleItem(
+                    motorcycle = motorcycle,
+                    onEdit = {
+                        selectedMotorcycle = motorcycle
+                        newMotorcycleName = motorcycle.name
+                        showDialog = true
+                    },
+                    onDelete = {
+                        motorcycleList = motorcycleList.filter { it != motorcycle }
+                    }
+                )
+            }
         }
+    }
 
-        // Logo and System Name
+    // Dialog for Editing Motorcycle
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = "Edit Motorcycle") },
+            text = {
+                Column {
+                    TextField(
+                        value = newMotorcycleName,
+                        onValueChange = { newMotorcycleName = it },
+                        label = { Text("Motorcycle Name") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    // Update existing motorcycle
+                    motorcycleList = motorcycleList.map {
+                        if (it == selectedMotorcycle) Motorcycle(newMotorcycleName) else it
+                    }
+                    showDialog = false
+                }) {
+                    Text("Save")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun MotorcycleItem(
+    motorcycle: Motorcycle,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 32.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Replace with your logo resource
-            val logo: Painter = painterResource(id = R.drawable.logo)
-            Image(
-                painter = logo,
-                contentDescription = "Logo",
-                modifier = Modifier.size(58.dp) // Adjust size as needed
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = "Moto Rent",
-                color = Color.Black,
-                fontSize = 36.sp,
-                fontWeight = FontWeight.Bold,
-            )
-        }
-
-        // Main Content
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 32.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Manage Motorcycle Details",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            )
+            Text(motorcycle.name, style = MaterialTheme.typography.bodyLarge)
+            Row {
+                IconButton(onClick = onEdit) {
+                    Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit")
+                }
+                IconButton(onClick = onDelete) {
+                    Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
+                }
+            }
         }
     }
 }
+
+// Data class for Motorcycle
+data class Motorcycle(var name: String)

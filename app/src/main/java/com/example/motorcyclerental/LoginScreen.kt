@@ -126,7 +126,7 @@ fun LoginScreen(navController: NavController) {
                                     user?.let {
                                         if (it.email == "admin@gmail.com") { // Replace with your owner's email
                                             Toast.makeText(context, "Welcome Admin!", Toast.LENGTH_SHORT).show()
-                                            navController.navigate("AdminDashboard")//ibutang diri puli ang name sa imong owner nga screen, pareha sa gihimo nimo sa katong navigation ba and then suwayi ug pa run nya if mogana ba
+                                            navController.navigate("AdminDashboard")
                                         } else {
                                             Toast.makeText(context, "Login successful!", Toast.LENGTH_SHORT).show()
                                             navController.navigate("SelectScreen")

@@ -1,9 +1,15 @@
 package com.example.motorcyclerental
 
+import ManageMotorcycleDetailsScreen
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
@@ -67,7 +73,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable("ManageMotorcycleDetails"){
-                    ManageMotorcycleDetails(navController)
+                    ManageMotorcycleDetailsScreen()
                 }
 
                 composable("ManageBookingScreen"){
@@ -85,3 +91,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
