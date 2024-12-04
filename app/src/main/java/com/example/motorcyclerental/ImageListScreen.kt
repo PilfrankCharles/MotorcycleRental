@@ -297,7 +297,6 @@ fun ProfileSheetContent(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Profile Icon
         Icon(
             imageVector = Icons.Default.Person,
             contentDescription = "User Profile",
@@ -305,10 +304,8 @@ fun ProfileSheetContent(
             tint = MaterialTheme.colorScheme.primary
         )
 
-        // Spacer
         Spacer(modifier = Modifier.height(8.dp))
 
-        // User Email
         Text(
             text = email,
             fontSize = 14.sp,
@@ -319,10 +316,9 @@ fun ProfileSheetContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Login Button
         Button(
             onClick = onLoginClick,
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF316FF6)),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = "Log In", color = Color.White)
@@ -330,10 +326,9 @@ fun ProfileSheetContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Logout Button
         Button(
             onClick = onLogoutClick,
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF316FF6)),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = "Log Out", color = Color.White)

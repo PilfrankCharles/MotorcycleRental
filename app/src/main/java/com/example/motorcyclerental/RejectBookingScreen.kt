@@ -34,12 +34,12 @@ fun RejectBookingScreen(navController: NavController){
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Back Arrow
+
         IconButton(onClick = { navController.popBackStack() }) {
             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
         }
 
-        // Logo and System Name
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -47,7 +47,7 @@ fun RejectBookingScreen(navController: NavController){
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            // Replace with your logo resource
+
             val logo: Painter = painterResource(id = R.drawable.logo)
             Image(
                 painter = logo,
@@ -63,7 +63,6 @@ fun RejectBookingScreen(navController: NavController){
             )
         }
 
-        // Main Content
         Column(
             modifier = Modifier
                 .fillMaxSize()

@@ -60,6 +60,10 @@ class MainActivity : ComponentActivity() {
                     BookingHistoryScreen(navController)
                 }
 
+                composable("CancelledBookingsScreen") {
+                    CancelledBookingsScreen(navController)
+                }
+
                 composable("LoginScreen") {
                     LoginScreen(navController)
                 }
@@ -68,27 +72,26 @@ class MainActivity : ComponentActivity() {
                     SignUpScreen(navController)
                 }
 
-                composable("AdminDashboard"){
+                composable("AdminDashboard") {
                     AdminDashboard(navController)
                 }
 
-                composable("ManageMotorcycleDetails"){
+                composable("ManageMotorcycleDetails") {
                     ManageMotorcycleDetailsScreen()
                 }
 
-                composable("ManageBookingScreen"){
+                composable("ManageBookingScreen") {
                     ManageBookingScreen(navController)
                 }
 
-                composable("ApproveBookingScreen"){
+                composable("ApproveBookingScreen") {
                     ApproveBookingScreen(navController)
                 }
 
-                composable("RejectBookingScreen"){
+                composable("RejectBookingScreen") {
                     RejectBookingScreen(navController)
                 }
             }
         }
     }
 }
-

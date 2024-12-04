@@ -34,12 +34,11 @@ fun ManageBookingScreen(navController: NavController) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Back Arrow
+
         IconButton(onClick = { navController.popBackStack() }) {
             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
         }
 
-        // Logo and System Name
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -47,12 +46,11 @@ fun ManageBookingScreen(navController: NavController) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            // Replace with your logo resource
             val logo: Painter = painterResource(id = R.drawable.logo)
             Image(
                 painter = logo,
                 contentDescription = "Logo",
-                modifier = Modifier.size(58.dp) // Adjust size as needed
+                modifier = Modifier.size(58.dp)
             )
             Spacer(modifier = Modifier.width(16.dp))
             Text(
@@ -63,7 +61,6 @@ fun ManageBookingScreen(navController: NavController) {
             )
         }
 
-        // Main Content
         Column(
             modifier = Modifier
                 .fillMaxSize()

@@ -11,19 +11,16 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ManageMotorcycleDetailsScreen() {
-    // Simulated list of motorcycles
     var motorcycleList by remember { mutableStateOf(listOf(Motorcycle("Honda CBR500R"), Motorcycle("Yamaha R3"))) }
     var showDialog by remember { mutableStateOf(false) }
     var selectedMotorcycle by remember { mutableStateOf<Motorcycle?>(null) }
     var newMotorcycleName by remember { mutableStateOf("") }
 
-    // Main UI
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Motorcycle List
         LazyColumn(modifier = Modifier.fillMaxSize().padding(top = 16.dp)) {
             items(motorcycleList) { motorcycle ->
                 MotorcycleItem(
@@ -41,7 +38,6 @@ fun ManageMotorcycleDetailsScreen() {
         }
     }
 
-    // Dialog for Editing Motorcycle
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
@@ -107,5 +103,4 @@ fun MotorcycleItem(
     }
 }
 
-// Data class for Motorcycle
 data class Motorcycle(var name: String)

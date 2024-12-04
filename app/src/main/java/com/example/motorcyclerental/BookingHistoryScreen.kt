@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -25,11 +26,11 @@ import java.util.*
 @Composable
 fun BookingHistoryScreen(navController: NavController) {
     val bookings = BookingManager.bookingRecords
+    val cancelledBookings = remember { mutableStateListOf<BookingRecord>() }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val coroutineScope = rememberCoroutineScope()
 
-    // Fetch bookings from Firestore
     LaunchedEffect(Unit) {
         try {
             BookingManager.fetchAllBookings(
@@ -97,7 +98,24 @@ fun BookingHistoryScreen(navController: NavController) {
                                 .padding(16.dp)
                         ) {
                             bookings.forEach { booking ->
-                                BookingItem(booking = booking)
+                                val isCancelled = cancelledBookings.contains(booking)
+
+                                BookingItem(
+                                    booking = booking,
+                                    onCancel = {
+                                        BookingManager.cancelBooking(booking.id,
+                                            onSuccess = {
+                                                cancelledBookings.add(booking)
+                                                bookings.remove(booking)
+                                                BookingManager.addCancelledBooking(booking) // Add to cancelled list
+                                            },
+                                            onFailure = { e ->
+                                                errorMessage = "Failed to cancel booking: ${e.message}"
+                                            }
+                                        )
+                                    },
+                                    isCancelled = isCancelled
+                                )
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
 
@@ -127,6 +145,20 @@ fun BookingHistoryScreen(navController: NavController) {
                             ) {
                                 Text("Clear All Booking History", color = Color.White)
                             }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Button(
+                                onClick = {
+                                    navController.navigate("CancelledBookingsScreen")
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1877F2)),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                            ) {
+                                Text("View Cancelled Bookings", color = Color.White)
+                            }
                         }
                     }
                 }
@@ -136,11 +168,17 @@ fun BookingHistoryScreen(navController: NavController) {
 }
 
 @Composable
-fun BookingItem(booking: BookingRecord) {
+fun BookingItem(
+    booking: BookingRecord,
+    onCancel: (() -> Unit)? = null,
+    isCancelled: Boolean = false
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White, shape = RoundedCornerShape(12.dp))
+            .padding(12.dp)
+            .background(Color.White, RoundedCornerShape(8.dp))
+            .shadow(4.dp)
             .padding(16.dp)
     ) {
         Text("Bike Name: ${booking.bikeName}", fontWeight = FontWeight.Bold, fontSize = 16.sp)
@@ -152,5 +190,23 @@ fun BookingItem(booking: BookingRecord) {
             }",
             fontSize = 12.sp
         )
+
+        if (!isCancelled && onCancel != null) {
+            Button(
+                onClick = {
+                    onCancel()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Cancel Booking", color = Color.White)
+            }
+        } else if (isCancelled) {
+            Text(
+                text = "This booking has been cancelled.",
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                color = Color.Red
+            )
+        }
     }
 }
