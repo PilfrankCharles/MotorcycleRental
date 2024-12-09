@@ -1,5 +1,6 @@
 package com.example.motorcyclerental
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -20,12 +21,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -46,7 +52,6 @@ fun ImageListScreen(brandName: String, navController: NavController) {
         BottomNavigationBar(navController)
     }
 }
-
 
 @Composable
 fun BackgroundImage() {
@@ -204,11 +209,13 @@ fun BookingButton(description: String, rate: String, navController: NavControlle
         )
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomNavigationBar(navController: NavController) {
+fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modifier) {
     var selectedItem by remember { mutableStateOf(0) }
     var showProfileSheet by remember { mutableStateOf(false) }
+    var favoriteItems by remember { mutableStateOf(listOf<Pair<Int, String>>()) }
 
     if (showProfileSheet) {
         ModalBottomSheet(
@@ -229,7 +236,7 @@ fun BottomNavigationBar(navController: NavController) {
                 },
                 onEditProfileClick = {
                     showProfileSheet = false
-                    navController.navigate("EditProfileScreen")
+                    navController.navigate("EditProfileScreen") // Navigate to Edit Profile
                 }
             )
         }
@@ -251,8 +258,7 @@ fun BottomNavigationBar(navController: NavController) {
             label = { Text("Saved") },
             selected = selectedItem == 1,
             onClick = {
-                // No favoriteItems logic, just navigate to the main screen
-                navController.navigate("MainScreen")
+                navController.navigate("MainScreen/${favoriteItems.joinToString(",")}")
                 selectedItem = 1
             }
         )
@@ -331,20 +337,17 @@ fun ProfileSheetContent(
     }
 }
 
-
 fun saveFavoriteToFirebase(modelName: String, isFavorite: Boolean) {
     val db = FirebaseFirestore.getInstance()
     val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
     val favoritesRef = db.collection("users").document(userId).collection("favorites")
     val favoriteDoc = favoritesRef.document(modelName)
-
     if (isFavorite) {
         favoriteDoc.set(mapOf("name" to modelName))
     } else {
         favoriteDoc.delete()
     }
 }
-
 fun getImageDescriptions(brandName: String): List<Pair<Int, String>> {
     return when (brandName) {
         "Honda" -> listOf(
@@ -398,16 +401,16 @@ fun getRates(brandName: String): List<String> {
         "Suzuki" -> listOf(
             "Daily rate: ₱650\nWeekly rate: ₱3,800\nMonthly rate: ₱10,500",
             "Daily rate: ₱700\nWeekly rate: ₱4,000\nMonthly rate: ₱11,000",
-            "Daily rate: ₱450\nWeekly rate: ₱2,700\nMonthly rate: ₱7,000",
+            "Daily rate: ₱500\nWeekly rate: ₱3,000\nMonthly rate: ₱8,000",
             "Daily rate: ₱600\nWeekly rate: ₱3,500\nMonthly rate: ₱9,500",
-            "Daily rate: ₱750\nWeekly rate: ₱4,200\nMonthly rate: ₱12,000"
+            "Daily rate: ₱700\nWeekly rate: ₱4,200\nMonthly rate: ₱11,500"
         )
         "Kawasaki" -> listOf(
-            "Daily rate: ₱1,200\nWeekly rate: ₱7,000\nMonthly rate: ₱25,000",
-            "Daily rate: ₱1,100\nWeekly rate: ₱6,500\nMonthly rate: ₱24,000",
-            "Daily rate: ₱600\nWeekly rate: ₱3,500\nMonthly rate: ₱9,500",
-            "Daily rate: ₱1,000\nWeekly rate: ₱6,000\nMonthly rate: ₱22,000",
-            "Daily rate: ₱500\nWeekly rate: ₱3,000\nMonthly rate: ₱8,000"
+            "Daily rate: ₱1,000\nWeekly rate: ₱6,000\nMonthly rate: ₱20,000",
+            "Daily rate: ₱900\nWeekly rate: ₱5,500\nMonthly rate: ₱18,000",
+            "Daily rate: ₱700\nWeekly rate: ₱4,200\nMonthly rate: ₱12,000",
+            "Daily rate: ₱950\nWeekly rate: ₱5,700\nMonthly rate: ₱17,000",
+            "Daily rate: ₱600\nWeekly rate: ₱3,500\nMonthly rate: ₱10,000"
         )
         else -> emptyList()
     }

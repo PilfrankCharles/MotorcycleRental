@@ -1,6 +1,7 @@
 package com.example.motorcyclerental
 
 import ManageMotorcycleDetailsScreen
+import SignUpScreen
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity

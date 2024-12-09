@@ -1,10 +1,25 @@
 package com.example.motorcyclerental
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,20 +30,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminDashboard(navController: NavController) {
+    // State variables to hold data
     var motorcycleCount by remember { mutableStateOf(0) }
     var activeUserCount by remember { mutableStateOf(0) }
     var totalSignUpCount by remember { mutableStateOf(0) }
 
+    // Fetch data on first composition
     LaunchedEffect(Unit) {
-        motorcycleCount = fetchMotorcycleImageCount()
-        activeUserCount = fetchActiveUserCount()
-        totalSignUpCount = fetchTotalSignUpCount()
+        motorcycleCount = fetchMotorcycleCount()
+        activeUserCount = fetchActiveUserCount() // Fetch the count of authenticated users
+        totalSignUpCount = fetchTotalSignUpCount() // Fetch the total number of sign-ups
     }
 
     Column(
@@ -39,9 +55,7 @@ fun AdminDashboard(navController: NavController) {
         verticalArrangement = Arrangement.Top
     ) {
         CenterAlignedTopAppBar(
-            title = {
-                Text(text = " ")
-            },
+            title = { Text(text = "") },
             navigationIcon = {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
@@ -62,7 +76,7 @@ fun AdminDashboard(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -77,17 +91,19 @@ fun AdminDashboard(navController: NavController) {
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 AdminCard(title = "Available", value = "20", modifier = Modifier.weight(1f))
-                AdminCard(title = "Motorcycle", value = motorcycleCount.toString(), modifier = Modifier.weight(1f))
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                AdminCard(title = "Total Sign-ups", value = totalSignUpCount.toString(), modifier = Modifier.weight(1f))
+                AdminCard(title = "Motorcycles", value = motorcycleCount.toString(), modifier = Modifier.weight(1f))
             }
         }
 
+        // Add a row for Total Sign-ups
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            AdminCard(title = "Total Sign-ups", value = totalSignUpCount.toString(), modifier = Modifier.weight(1f))
+        }
+
+        // Correct button placements
         Button(
             onClick = { navController.navigate("ManageMotorcycleDetails") },
             modifier = Modifier.fillMaxWidth(),
@@ -95,6 +111,7 @@ fun AdminDashboard(navController: NavController) {
         ) {
             Text("Manage Motorcycles Details", color = Color.White)
         }
+
         Button(
             onClick = { navController.navigate("ManageBookingScreen") },
             modifier = Modifier.fillMaxWidth(),
@@ -102,6 +119,7 @@ fun AdminDashboard(navController: NavController) {
         ) {
             Text("Manage Booking", color = Color.White)
         }
+
         Button(
             onClick = { navController.navigate("ApproveBookingScreen") },
             modifier = Modifier.fillMaxWidth(),
@@ -109,6 +127,7 @@ fun AdminDashboard(navController: NavController) {
         ) {
             Text("Approve Booking", color = Color.White)
         }
+
         Button(
             onClick = { navController.navigate("RejectBookingScreen") },
             modifier = Modifier.fillMaxWidth(),
@@ -133,37 +152,38 @@ fun AdminCard(title: String, value: String, modifier: Modifier = Modifier) {
     }
 }
 
-suspend fun fetchMotorcycleImageCount(): Int {
-    val storage = FirebaseStorage.getInstance()
-    val storageRef = storage.reference.child("motorcycles")
-
-    return try {
-        val result = storageRef.listAll().await()
-        result.items.size
-    } catch (e: Exception) {
-        e.printStackTrace()
-        0
-    }
-}
-
-suspend fun fetchActiveUserCount(): Int {
+// Function to fetch motorcycle count from Firestore
+suspend fun fetchMotorcycleCount(): Int {
     val db = FirebaseFirestore.getInstance()
-    val usersRef = db.collection("users")
+    val motorcyclesRef = db.collection("motorcycles") // Reference to the motorcycles collection
     return try {
-        val snapshot = usersRef.whereEqualTo("isActive", true).get().await()
-        snapshot.size()
+        val snapshot = motorcyclesRef.get().await()
+        snapshot.size() // Return the number of motorcycles
     } catch (e: Exception) {
-        0
+        0 // Return 0 if there's an error fetching the data
     }
 }
 
+// Fetch total sign-up count from Firestore
 suspend fun fetchTotalSignUpCount(): Int {
     val db = FirebaseFirestore.getInstance()
     val usersRef = db.collection("users")
     return try {
         val snapshot = usersRef.get().await()
-        snapshot.size()
+        snapshot.size() // Return the number of users (sign-ups)
     } catch (e: Exception) {
-        0
+        0 // Return 0 if there's an error fetching the data
+    }
+}
+
+// Function to fetch active user count from Firestore
+suspend fun fetchActiveUserCount(): Int {
+    val db = FirebaseFirestore.getInstance()
+    val usersRef = db.collection("users")
+    return try {
+        val snapshot = usersRef.whereEqualTo("isActive", true).get().await() // Assuming there's an "isActive" field
+        snapshot.size() // Return the number of active users
+    } catch (e: Exception) {
+        0 // Return 0 if there's an error fetching the data
     }
 }

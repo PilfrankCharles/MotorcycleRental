@@ -1,4 +1,3 @@
-package com.example.motorcyclerental
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -40,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.example.motorcyclerental.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -161,13 +161,12 @@ fun SignUpScreen(navController: NavController) {
                                 password.value.text.trim()
                             ).addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
+                                    Toast.makeText(context, "Sign-up successful!", Toast.LENGTH_SHORT).show()
                                     val user = FirebaseAuth.getInstance().currentUser
                                     val db = FirebaseFirestore.getInstance()
-
                                     // Check if user is not null before saving to Firestore
                                     if (user != null) {
                                         val userRef = db.collection("users").document(user.uid)
-
                                         // Save the user document with their UID and any other information
                                         userRef.set(
                                             mapOf(
@@ -182,7 +181,6 @@ fun SignUpScreen(navController: NavController) {
                                                 val currentCount = document.getLong("count")?.toInt() ?: 0
                                                 activeUsersRef.update("count", currentCount + 1)
                                             }
-
                                             Toast.makeText(
                                                 context,
                                                 "User details saved successfully!",
@@ -196,7 +194,6 @@ fun SignUpScreen(navController: NavController) {
                                             ).show()
                                         }
                                     }
-
                                     Toast.makeText(
                                         context,
                                         "Sign-up successful!",
@@ -212,10 +209,12 @@ fun SignUpScreen(navController: NavController) {
                                 }
                             }
                         } else {
+                            Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
                             Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT)
                                 .show()
                         }
                     } else {
+                        Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT).show()
                         Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT)
                             .show()
                     }
@@ -233,7 +232,6 @@ fun SignUpScreen(navController: NavController) {
                     fontWeight = FontWeight.Bold
                 )
             }
-
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
@@ -255,6 +253,24 @@ fun SignUpScreen(navController: NavController) {
                             popUpTo("LoginScreen") { inclusive = true }
                         }
                     }
+                )
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+            Button(
+                onClick = {
+                    navController.navigate("SelectScreen")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = "Continue as Guest",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
@@ -295,5 +311,3 @@ fun PasswordTextField(password: MutableState<TextFieldValue>, label: String) {
         }
     )
 }
-
-
