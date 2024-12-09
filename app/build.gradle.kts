@@ -40,6 +40,10 @@ android {
 }
 
 dependencies {
+
+    implementation ("com.google.firebase:firebase-storage-ktx:20.0.0")
+    implementation("io.coil-kt:coil-compose:2.2.2")
+
     // Firebase BoM (Bill of Materials) for version management
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
 

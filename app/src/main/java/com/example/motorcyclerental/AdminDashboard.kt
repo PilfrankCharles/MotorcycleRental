@@ -15,21 +15,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminDashboard(navController: NavController) {
-    // State variables to hold data
     var motorcycleCount by remember { mutableStateOf(0) }
     var activeUserCount by remember { mutableStateOf(0) }
     var totalSignUpCount by remember { mutableStateOf(0) }
 
-    // Fetch data on first composition
     LaunchedEffect(Unit) {
-        motorcycleCount = fetchMotorcycleCount()
-        activeUserCount = fetchActiveUserCount() // Fetch the count of authenticated users
-        totalSignUpCount = fetchTotalSignUpCount() // Fetch the total number of sign-ups
+        motorcycleCount = fetchMotorcycleImageCount()
+        activeUserCount = fetchActiveUserCount()
+        totalSignUpCount = fetchTotalSignUpCount()
     }
 
     Column(
@@ -78,10 +77,9 @@ fun AdminDashboard(navController: NavController) {
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 AdminCard(title = "Available", value = "20", modifier = Modifier.weight(1f))
-                AdminCard(title = "Motorcycles", value = motorcycleCount.toString(), modifier = Modifier.weight(1f))
+                AdminCard(title = "Motorcycle", value = motorcycleCount.toString(), modifier = Modifier.weight(1f))
             }
 
-            // Add a row for Total Sign-ups
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -90,7 +88,6 @@ fun AdminDashboard(navController: NavController) {
             }
         }
 
-        // Buttons with updated container color
         Button(
             onClick = { navController.navigate("ManageMotorcycleDetails") },
             modifier = Modifier.fillMaxWidth(),
@@ -122,7 +119,6 @@ fun AdminDashboard(navController: NavController) {
     }
 }
 
-// AdminCard composable to display card with title and value
 @Composable
 fun AdminCard(title: String, value: String, modifier: Modifier = Modifier) {
     Box(
@@ -137,38 +133,37 @@ fun AdminCard(title: String, value: String, modifier: Modifier = Modifier) {
     }
 }
 
-// Function to fetch motorcycle count from Firestore
-suspend fun fetchMotorcycleCount(): Int {
-    val db = FirebaseFirestore.getInstance()
-    val motorcyclesRef = db.collection("motorcycles") // Reference to the motorcycles collection
+suspend fun fetchMotorcycleImageCount(): Int {
+    val storage = FirebaseStorage.getInstance()
+    val storageRef = storage.reference.child("motorcycles")
+
     return try {
-        val snapshot = motorcyclesRef.get().await()
-        snapshot.size() // Return the number of motorcycles
+        val result = storageRef.listAll().await()
+        result.items.size
     } catch (e: Exception) {
-        0 // Return 0 if there's an error fetching the data
+        e.printStackTrace()
+        0
     }
 }
 
-// Fetch total sign-up count from Firestore
+suspend fun fetchActiveUserCount(): Int {
+    val db = FirebaseFirestore.getInstance()
+    val usersRef = db.collection("users")
+    return try {
+        val snapshot = usersRef.whereEqualTo("isActive", true).get().await()
+        snapshot.size()
+    } catch (e: Exception) {
+        0
+    }
+}
+
 suspend fun fetchTotalSignUpCount(): Int {
     val db = FirebaseFirestore.getInstance()
     val usersRef = db.collection("users")
     return try {
         val snapshot = usersRef.get().await()
-        snapshot.size() // Return the number of users (sign-ups)
+        snapshot.size()
     } catch (e: Exception) {
-        0 // Return 0 if there's an error fetching the data
-    }
-}
-
-// Function to fetch active user count from Firestore
-suspend fun fetchActiveUserCount(): Int {
-    val db = FirebaseFirestore.getInstance()
-    val usersRef = db.collection("users")
-    return try {
-        val snapshot = usersRef.whereEqualTo("isActive", true).get().await() // Assuming there's an "isActive" field
-        snapshot.size() // Return the number of active users
-    } catch (e: Exception) {
-        0 // Return 0 if there's an error fetching the data
+        0
     }
 }
