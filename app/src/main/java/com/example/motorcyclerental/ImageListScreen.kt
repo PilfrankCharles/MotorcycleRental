@@ -129,6 +129,7 @@ fun ImageCard(
             IconButton(
                 onClick = {
                     isFavorite = !isFavorite
+                    saveFavoriteToFirebase(description, isFavorite)
                 },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -333,6 +334,19 @@ fun ProfileSheetContent(
         ) {
             Text(text = "Log Out", color = Color.White)
         }
+    }
+}
+
+fun saveFavoriteToFirebase(modelName: String, isFavorite: Boolean) {
+    val db = FirebaseFirestore.getInstance()
+    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+    val favoritesRef = db.collection("users").document(userId).collection("favorites")
+    val favoriteDoc = favoritesRef.document(modelName)
+
+    if (isFavorite) {
+        favoriteDoc.set(mapOf("name" to modelName))
+    } else {
+        favoriteDoc.delete()
     }
 }
 
